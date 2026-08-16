@@ -38,6 +38,8 @@ jobs:
         run: |
           set -euo pipefail
           test -s index.html
+          test -s source-review.html
+          test -s review/source_extraction_review.json
           test -s data/v3/manifest.json
           test -s data/v3/indexes/search_audit.json
           test -s safety/rules_v3.json
@@ -47,13 +49,20 @@ jobs:
               m = json.load(f)
           with open('data/v3/indexes/search_audit.json', encoding='utf-8') as f:
               a = json.load(f)
+          with open('review/source_extraction_review.json', encoding='utf-8') as f:
+              r = json.load(f)
           assert m.get('version') == 'v3', m.get('version')
           assert m.get('medicines') == 683, m.get('medicines')
           assert m.get('symptomChapters') == 38, m.get('symptomChapters')
           assert a.get('unresolvedRubricMentions') == 30481, a.get('unresolvedRubricMentions')
           assert a.get('postingTruncation') is False, a.get('postingTruncation')
           assert a.get('medicineSymptomEvidence') == a.get('indexedMedicineSymptomEvidence')
-          print('Validated OCR-repaired Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', a.get('unresolvedRubricMentions'), 'unresolved mentions,', a.get('indexedMedicineSymptomEvidence'), 'indexed symptom-evidence rows')
+          assert r.get('summary', {}).get('productionMedicines') == m.get('medicines')
+          assert r.get('summary', {}).get('completeSourceMedicineMappings') == 2181
+          assert r.get('summary', {}).get('doubtfulRecords') == 2432
+          assert r.get('summary', {}).get('notUnderstoodRecords') == 8760
+          assert r.get('summary', {}).get('excludedRecords') == 260
+          print('Validated source-review Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', r.get('summary'))
           PY
 
       - name: Upload Pages artifact
