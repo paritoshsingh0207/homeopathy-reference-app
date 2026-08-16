@@ -1,0 +1,68 @@
+name: Publish audited source-review v3 snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gh-pages.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download audited Unified v3 PWA snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://sdmntprcentralindia.oaiusercontent.com/files/00000000-f52c-8208-947b-17fe921618e6/raw?se=2026-08-16T09%3A04%3A03Z&sp=r&sv=2026-02-06&sr=b&scid=9520a61a-6df5-53a0-b84c-55b5b350df25&skoid=a3d7d4f3-706d-48bc-8860-17488c12cb39&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-16T03%3A53%3A35Z&ske=2026-08-17T03%3A53%3A35Z&sks=b&skv=2026-02-06&sig=KNCTuNyR%2BAj5oSmKRAcgDRD7HBQunT4oRX5HIG69y1g%3D' -o snapshot.zip
+          mkdir snapshot
+          unzip -q snapshot.zip -d snapshot
+
+      - name: Validate deployment snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s snapshot/index.html
+          test -s snapshot/source-review.html
+          test -s snapshot/review/source_extraction_review.json
+          test -s snapshot/data/v3/manifest.json
+          test -s snapshot/data/v3/indexes/search_audit.json
+          test -s snapshot/safety/rules_v3.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('snapshot')
+          m=json.loads((root/'data/v3/manifest.json').read_text())
+          a=json.loads((root/'data/v3/indexes/search_audit.json').read_text())
+          r=json.loads((root/'review/source_extraction_review.json').read_text())
+          assert m['version']=='v3'
+          assert m['medicines']==683
+          assert m['symptomChapters']==38
+          assert a['postingTruncation'] is False
+          assert a['medicineSymptomEvidence']==a['indexedMedicineSymptomEvidence']
+          assert r['summary']['productionMedicines']==m['medicines']
+          assert r['summary']['completeSourceMedicineMappings']==2181
+          assert r['summary']['doubtfulRecords']==2432
+          assert r['summary']['notUnderstoodRecords']==8760
+          assert r['summary']['excludedRecords']==260
+          print('Validated source-review snapshot:', r['summary'])
+          PY
+
+      - name: Publish compiled app to gh-pages branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd snapshot
+          git init
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout --orphan gh-pages
+          git add -A
+          git commit -m 'deploy: audited source extraction review v3 PWA'
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
