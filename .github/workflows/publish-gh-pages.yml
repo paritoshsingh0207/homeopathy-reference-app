@@ -1,0 +1,68 @@
+name: Publish audited v3 snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gh-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download audited Unified v3 PWA snapshot
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output app.zip 'https://sdmntprcentralindia.oaiusercontent.com/files/00000000-463c-8208-b080-8d3aa0b10e86/raw?se=2026-08-16T08%3A16%3A49Z&sp=r&sv=2026-02-06&sr=b&scid=ca205d7e-d6f3-5c8d-b49b-2b06f5e216db&skoid=a3d7d4f3-706d-48bc-8860-17488c12cb39&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-16T04%3A14%3A16Z&ske=2026-08-17T04%3A14%3A16Z&sks=b&skv=2026-02-06&sig=RjAkdUbK5nLpDhtqEx5B8bRsDcsTnZ10enFTdWYOcd0%3D'
+          mkdir site
+          unzip -q app.zip -d site
+
+      - name: Validate deployment snapshot
+        run: |
+          set -euo pipefail
+          test -s site/index.html
+          test -s site/data/v3/manifest.json
+          test -s site/data/v3/indexes/search_audit.json
+          test -s site/safety/rules_v3.json
+          test -s site/manifest.webmanifest
+          test -s site/sw.js
+          python - <<'PY'
+          import json
+          with open('site/data/v3/manifest.json', encoding='utf-8') as f:
+              m = json.load(f)
+          with open('site/data/v3/indexes/search_audit.json', encoding='utf-8') as f:
+              a = json.load(f)
+          assert m.get('version') == 'v3'
+          assert m.get('medicines') == 683, m.get('medicines')
+          assert m.get('symptomChapters') == 38, m.get('symptomChapters')
+          assert a.get('unresolvedRubricMentions') == 30481, a.get('unresolvedRubricMentions')
+          assert a.get('postingTruncation') is False
+          assert a.get('medicineSymptomEvidence') == a.get('indexedMedicineSymptomEvidence')
+          print('Validated OCR-repaired snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', a.get('unresolvedRubricMentions'), 'unresolved mentions')
+          PY
+          printf 'User-agent: *\nAllow: /\n' > site/robots.txt
+          touch site/.nojekyll
+
+      - name: Publish compiled app to gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cd site
+          git init
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b gh-pages
+          git add -A
+          git commit -m 'deploy: audited OCR-repaired Unified v3 PWA'
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
+          git push --force origin gh-pages
