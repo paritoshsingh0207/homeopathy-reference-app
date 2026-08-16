@@ -48,10 +48,12 @@ jobs:
           with open('data/v3/indexes/search_audit.json', encoding='utf-8') as f:
               a = json.load(f)
           assert m.get('version') == 'v3', m.get('version')
+          assert m.get('medicines') == 683, m.get('medicines')
           assert m.get('symptomChapters') == 38, m.get('symptomChapters')
+          assert a.get('unresolvedRubricMentions') == 30481, a.get('unresolvedRubricMentions')
           assert a.get('postingTruncation') is False, a.get('postingTruncation')
           assert a.get('medicineSymptomEvidence') == a.get('indexedMedicineSymptomEvidence')
-          print('Validated Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', a.get('indexedMedicineSymptomEvidence'), 'indexed symptom-evidence rows')
+          print('Validated OCR-repaired Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', a.get('unresolvedRubricMentions'), 'unresolved mentions,', a.get('indexedMedicineSymptomEvidence'), 'indexed symptom-evidence rows')
           PY
 
       - name: Upload Pages artifact
