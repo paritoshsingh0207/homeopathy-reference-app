@@ -39,14 +39,19 @@ jobs:
           set -euo pipefail
           test -s index.html
           test -s data/v3/manifest.json
+          test -s data/v3/indexes/search_audit.json
           test -s safety/rules_v3.json
           python - <<'PY'
           import json
           with open('data/v3/manifest.json', encoding='utf-8') as f:
               m = json.load(f)
+          with open('data/v3/indexes/search_audit.json', encoding='utf-8') as f:
+              a = json.load(f)
           assert m.get('version') == 'v3', m.get('version')
           assert m.get('symptomChapters') == 38, m.get('symptomChapters')
-          print('Validated Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters')
+          assert a.get('postingTruncation') is False, a.get('postingTruncation')
+          assert a.get('medicineSymptomEvidence') == a.get('indexedMedicineSymptomEvidence')
+          print('Validated Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', a.get('indexedMedicineSymptomEvidence'), 'indexed symptom-evidence rows')
           PY
 
       - name: Upload Pages artifact
