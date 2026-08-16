@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#173f3b" />
+  <title>Source Extraction Review | Historical Homeopathy Reference</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17332f;background:#f4f7f4;color-scheme:light}
+    *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}
+    a{color:inherit}.shell{min-height:100vh}.top{background:#173f3b;color:#fff;padding:20px max(18px,calc((100vw - 1280px)/2));display:flex;justify-content:space-between;gap:18px;align-items:center}
+    .top h1{margin:0;font-size:clamp(1.35rem,3vw,2rem)}.top p{margin:5px 0 0;opacity:.8}.back{border:1px solid #a9d3c8;border-radius:999px;padding:8px 12px;text-decoration:none;white-space:nowrap;background:#24564f}
+    main{max-width:1280px;margin:24px auto;padding:0 18px 40px}.card{background:#fff;border:1px solid #dde6e1;border-radius:16px;padding:20px;box-shadow:0 4px 18px #173f3b0b;margin-bottom:18px}
+    .intro{display:flex;gap:12px;align-items:flex-start}.icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:#e8f1ed;color:#195f55;font-weight:800;flex:0 0 auto}.intro h2{margin:0 0 5px}.intro p{margin:0;color:#60736e;line-height:1.5}
+    .notice{margin-top:14px;background:#fffaf0;border:1px solid #ead4a4;border-radius:11px;padding:12px 14px;color:#71551f;line-height:1.5}.notice strong{color:#513a10}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-top:18px}.metric{border:1px solid #e1e8e4;background:#fafcfb;border-radius:11px;padding:12px}.metric strong{display:block;font-size:1.45rem;color:#173f3b}.metric span{font-size:.82rem;color:#60736e}
+    .filters{display:grid;grid-template-columns:minmax(240px,2fr) minmax(180px,1fr) minmax(170px,1fr) auto;gap:10px;align-items:end}.field label{display:block;font-size:.78rem;font-weight:700;color:#58706a;margin-bottom:5px}.field input,.field select{width:100%;border:1px solid #cfdad4;border-radius:9px;padding:10px;background:#fff;color:#17332f}.button{border:0;border-radius:9px;background:#195f55;color:#fff;padding:10px 14px;font-weight:700;cursor:pointer}.button.secondary{background:#fff;color:#244d46;border:1px solid #b9cbc3}.button:disabled{opacity:.5;cursor:not-allowed}
+    .source-details{margin-top:14px;border-top:1px solid #e5ebe8;padding-top:14px}.source-details h3{margin:0 0 7px}.source-details p{margin:4px 0;color:#60736e}.docs{overflow:auto;margin-top:10px}.docs table{min-width:760px}
+    table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid #e8eeeb;vertical-align:top}th{font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;color:#60736e;background:#fafcfb;position:sticky;top:0;z-index:1}td{font-size:.9rem}.table-wrap{overflow:auto;max-height:68vh;border:1px solid #e1e8e4;border-radius:11px}
+    .status{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:.72rem;font-weight:800;white-space:nowrap}.complete{background:#e7f6ed;color:#215d3a;border:1px solid #b8ddc7}.doubtful{background:#fff7dd;color:#715812;border:1px solid #e2cd82}.not_understood{background:#fff0ef;color:#84251f;border:1px solid #efb4af}.excluded{background:#f1f3f2;color:#68736f;border:1px solid #d9dfdc}
+    .raw{font-weight:700}.canonical{color:#195f55;font-weight:700}.muted{color:#6d7d78}.small{font-size:.78rem}.evidence{white-space:nowrap}.review-controls{min-width:225px}.review-controls select,.review-controls input{width:100%;border:1px solid #ccd8d2;border-radius:7px;padding:6px 7px;margin-bottom:5px;background:#fff}.review-controls input{font-size:.8rem}.saved{font-size:.72rem;color:#286047}
+    .result-bar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:14px 0 9px;flex-wrap:wrap}.result-bar strong{font-size:1.02rem}.paging{display:flex;gap:8px;align-items:center;margin-top:12px}.paging span{font-size:.82rem;color:#60736e}.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px;margin-top:12px}.legend>div{border:1px solid #e3e9e6;border-radius:10px;padding:10px}.legend p{margin:5px 0 0;color:#60736e;font-size:.83rem;line-height:1.45}
+    details summary{cursor:pointer;font-weight:700}.cross-list{display:grid;gap:8px;margin-top:12px}.cross-item{border:1px solid #e2e8e5;border-radius:10px;padding:10px}.cross-item strong{display:block}.cross-item code{font-size:.78rem;word-break:break-word}.error{background:#fff0ef;border:1px solid #efb4af;color:#84251f;border-radius:10px;padding:12px}.loading{padding:24px;text-align:center;color:#60736e}
+    footer{text-align:center;color:#71807c;font-size:.82rem;padding:20px}
+    @media(max-width:850px){.top{align-items:flex-start}.filters{grid-template-columns:1fr 1fr}.filters .search-field{grid-column:1/-1}.filters .button{width:100%}.table-wrap{max-height:none}.review-controls{min-width:190px}}
+    @media(max-width:560px){.top{flex-direction:column}.filters{grid-template-columns:1fr}.filters .search-field{grid-column:auto}.card{padding:14px}main{padding:0 10px 30px}.metrics{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div>
+      <h1>Source Extraction Review</h1>
+      <p>Medical review workspace for source coverage, OCR uncertainty, and canonical medicine mapping</p>
+    </div>
+    <a class="back" href="./">← Main application</a>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="intro">
+        <div class="icon">Rx</div>
+        <div>
+          <h2>What this page is for</h2>
+          <p>See which source was referred, which medicine identity was extracted, and whether that extraction is confidently understood, doubtful, or not understood. The review data is generated from the same audited SQLite release used by the application.</p>
+        </div>
+      </div>
+      <div class="notice"><strong>Medical-review rule:</strong> decisions made here are stored only in this browser. They never alter the database automatically. Export the decisions after professional review; approved changes must still go through the versioned source/provenance rebuild and release gates.</div>
+      <div id="metrics" class="metrics"><div class="loading">Loading review audit…</div></div>
+    </section>
+
+    <section class="card">
+      <div class="filters">
+        <div class="field search-field"><label for="query">Medicine / raw OCR text</label><input id="query" placeholder="Search canonical medicine, raw token, reason…" /></div>
+        <div class="field"><label for="source">Source</label><select id="source"><option value="all">All sources</option></select></div>
+        <div class="field"><label for="status">Extraction status</label><select id="status"><option value="needs_review">Needs medical review</option><option value="all">All statuses</option><option value="complete">Complete</option><option value="doubtful">Doubtful</option><option value="not_understood">Did not understand</option><option value="excluded">Excluded noise/non-remedy</option></select></div>
+        <button id="export" class="button" type="button">Export review decisions</button>
+      </div>
+      <div id="sourceDetails" class="source-details"></div>
+      <div class="legend">
+        <div><span class="status complete">Complete</span><p>Confidently resolved to a canonical medicine with source-backed evidence. This means the identity mapping is understood; it does not claim that every sentence in the source is extracted.</p></div>
+        <div><span class="status doubtful">Doubtful</span><p>Ambiguous abbreviation, low-confidence identity, or a mapping accepted only through fuzzy OCR. Medical review is recommended before changing canonical data.</p></div>
+        <div><span class="status not_understood">Did not understand</span><p>A medicine-like source token could not be mapped safely. The raw text is preserved for manual identification.</p></div>
+        <div><span class="status excluded">Excluded</span><p>Noise or non-remedy text retained for audit. It should not be promoted merely to increase the medicine count.</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="result-bar"><strong id="resultCount">Loading records…</strong><span id="reviewedCount" class="muted"></span></div>
+      <div id="error"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Raw / extracted text</th><th>Canonical medicine</th><th>Source</th><th>Evidence / occurrences</th><th>Reason</th><th>Medical reviewer decision</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="7" class="loading">Loading source review data…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="paging"><button id="more" class="button secondary" type="button">Show more</button><span id="shown"></span></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Cross-source canonicalization review</summary>
+        <p class="muted">These items arise while reconciling headings and aliases across sources. They are shown separately because they are not always attributable to one document.</p>
+        <div id="cross" class="cross-list"></div>
+      </details>
+    </section>
+  </main>
+  <footer>Historical reference retrieval • source-auditable • reviewer decisions are non-destructive</footer>
+</div>
+
+<script>
+(() => {
+  const DATA_URL = './review/source_extraction_review.json';
+  const STORAGE_KEY = 'homeopathy-source-extraction-review-decisions-v1';
+  const statusLabel = {complete:'Complete',doubtful:'Doubtful',not_understood:'Did not understand',excluded:'Excluded'};
+  const decisionOptions = [
+    ['', 'Unreviewed'],
+    ['accept_mapping', 'Accept mapping'],
+    ['identify_medicine', 'Identify / propose medicine'],
+    ['not_a_medicine', 'Not a medicine'],
+    ['needs_more_source', 'Needs more source'],
+    ['defer', 'Defer']
+  ];
+  let dataset = null;
+  let allRows = [];
+  let filteredRows = [];
+  let visible = 100;
+  let decisions = loadDecisions();
+
+  const el = id => document.getElementById(id);
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+  const num = n => Number(n || 0).toLocaleString();
+
+  function loadDecisions(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch { return {}; }
+  }
+  function saveDecisions(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(decisions)); }
+  function rowKey(row){ return [row.source,row.status,row.raw || row.medicine || '',row.medicineId || '',row.reason || ''].join('|'); }
+  function categoryFromUnresolved(status){
+    if(status === 'ambiguous_abbreviation' || status === 'ambiguous_or_low_confidence') return 'doubtful';
+    if(status === 'unresolved') return 'not_understood';
+    return 'excluded';
+  }
+
+  function normalizeRows(data){
+    const rows = [];
+    for(const r of data.complete || []){
+      rows.push({status:'complete',source:r.source,raw:r.medicine,medicine:r.medicine,medicineId:r.medicineId,
+        evidence:`${num(r.sections)} sections · ${num(r.passages)} passages · ${num(r.rubricMentions)} confident rubric mentions`,reason:'confident_source_mapping'});
+    }
+    for(const r of data.doubtfulResolved || []){
+      rows.push({status:'doubtful',source:r.source,raw:r.raw,medicine:r.medicine,medicineId:r.medicineId,
+        evidence:`${num(r.occurrences)} occurrence(s) · confidence ${Number(r.confidence || 0).toFixed(3)}`,reason:r.reason || 'fuzzy_ocr_abbreviation'});
+    }
+    for(const r of data.unresolved || []){
+      const status = r.category || categoryFromUnresolved(r.resolutionStatus);
+      rows.push({status,source:r.source,raw:r.raw || r.token,medicine:'',medicineId:'',
+        evidence:`${num(r.occurrences)} occurrence(s)`,reason:r.resolutionStatus || status});
+    }
+    return rows;
+  }
+
+  function renderMetrics(){
+    const s = dataset.summary || {};
+    const decided = Object.values(decisions).filter(d => d && (d.decision || d.note)).length;
+    const metrics = [
+      [s.productionMedicines, 'production medicines'],
+      [s.sources, 'sources reviewed'],
+      [s.completeSourceMedicineMappings, 'complete source↔medicine mappings'],
+      [s.doubtfulRecords, 'doubtful records'],
+      [s.notUnderstoodRecords, 'not-understood records'],
+      [decided, 'review decisions saved locally']
+    ];
+    el('metrics').innerHTML = metrics.map(([v,l]) => `<div class="metric"><strong>${num(v)}</strong><span>${esc(l)}</span></div>`).join('');
+    el('reviewedCount').textContent = `${num(decided)} reviewer decision(s) stored in this browser`;
+  }
+
+  function renderSourceOptions(){
+    const source = el('source');
+    source.innerHTML = '<option value="all">All sources</option>' + (dataset.sources || []).map(s => `<option value="${esc(s.key)}">${esc(s.name)} (${esc(s.key)})</option>`).join('');
+  }
+
+  function renderSourceDetails(){
+    const key = el('source').value;
+    if(key === 'all'){
+      el('sourceDetails').innerHTML = '<p class="muted">Choose a source to see its publication/document and extraction details.</p>';
+      return;
+    }
+    const s = (dataset.sources || []).find(item => item.key === key);
+    if(!s){ el('sourceDetails').innerHTML=''; return; }
+    const docs = (s.documents || []).map(d => `<tr><td>${esc(d.docId)}</td><td>${esc(d.path)}</td><td>${esc(d.pages ?? '—')}</td><td>${esc(d.extractionMethod || '—')}</td><td class="small">${esc(d.sha256 || '')}</td></tr>`).join('');
+    el('sourceDetails').innerHTML = `
+      <h3>${esc(s.name)}</h3>
+      <p><strong>Source key:</strong> ${esc(s.key)} &nbsp; <strong>Type:</strong> ${esc(s.type)} &nbsp; <strong>Publication year:</strong> ${esc(s.year ?? '—')}</p>
+      <p><strong>Current audit:</strong> ${num(s.completeMedicines)} complete medicine mappings · ${num(s.doubtfulRecords)} doubtful records · ${num(s.notUnderstoodRecords)} not understood · ${num(s.excludedRecords)} excluded.</p>
+      <div class="docs"><table><thead><tr><th>Document ID</th><th>Path / source document</th><th>Pages</th><th>Extraction method</th><th>SHA-256</th></tr></thead><tbody>${docs || '<tr><td colspan="5" class="muted">No production document metadata attached.</td></tr>'}</tbody></table></div>`;
+  }
+
+  function applyFilters(){
+    visible = 100;
+    const q = el('query').value.trim().toLowerCase();
+    const source = el('source').value;
+    const status = el('status').value;
+    filteredRows = allRows.filter(r => {
+      if(source !== 'all' && r.source !== source) return false;
+      if(status === 'needs_review' && !['doubtful','not_understood'].includes(r.status)) return false;
+      if(!['all','needs_review'].includes(status) && r.status !== status) return false;
+      if(q){
+        const hay = [r.raw,r.medicine,r.medicineId,r.source,r.reason].join(' ').toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    filteredRows.sort((a,b) => {
+      const rank = {doubtful:0,not_understood:1,complete:2,excluded:3};
+      return (rank[a.status]-rank[b.status]) || (Number((b.evidence.match(/[\d,]+/)||['0'])[0].replaceAll(',','')) - Number((a.evidence.match(/[\d,]+/)||['0'])[0].replaceAll(',',''))) || String(a.raw).localeCompare(String(b.raw));
+    });
+    renderSourceDetails();
+    renderRows();
+  }
+
+  function decisionControl(row){
+    if(row.status === 'complete') return '<span class="muted small">No action required</span>';
+    const key = rowKey(row);
+    const saved = decisions[key] || {};
+    const options = decisionOptions.map(([value,label]) => `<option value="${value}" ${saved.decision===value?'selected':''}>${label}</option>`).join('');
+    return `<div class="review-controls" data-key="${esc(key)}"><select aria-label="Reviewer decision">${options}</select><input value="${esc(saved.note || '')}" placeholder="Reviewer note / proposed medicine" aria-label="Reviewer note"/><span class="saved">${saved.updated ? 'Saved locally' : ''}</span></div>`;
+  }
+
+  function renderRows(){
+    const rows = filteredRows.slice(0, visible);
+    el('resultCount').textContent = `${num(filteredRows.length)} record(s) match the current filters`;
+    el('shown').textContent = filteredRows.length ? `Showing ${num(Math.min(visible, filteredRows.length))} of ${num(filteredRows.length)}` : '';
+    el('more').disabled = visible >= filteredRows.length;
+    if(!rows.length){ el('rows').innerHTML='<tr><td colspan="7" class="muted">No records match these filters.</td></tr>'; return; }
+    const sourceNames = Object.fromEntries((dataset.sources || []).map(s => [s.key,s.name]));
+    el('rows').innerHTML = rows.map(r => `<tr>
+      <td><span class="status ${esc(r.status)}">${esc(statusLabel[r.status] || r.status)}</span></td>
+      <td><span class="raw">${esc(r.raw || '—')}</span>${r.medicineId ? `<div class="small muted">${esc(r.medicineId)}</div>` : ''}</td>
+      <td>${r.medicine ? `<span class="canonical">${esc(r.medicine)}</span>` : '<span class="muted">Not mapped</span>'}</td>
+      <td><strong>${esc(sourceNames[r.source] || r.source)}</strong><div class="small muted">${esc(r.source)}</div></td>
+      <td class="evidence">${esc(r.evidence)}</td>
+      <td><span class="small">${esc(String(r.reason || '').replaceAll('_',' '))}</span></td>
+      <td>${decisionControl(r)}</td>
+    </tr>`).join('');
+    bindReviewControls();
+  }
+
+  function bindReviewControls(){
+    document.querySelectorAll('.review-controls').forEach(box => {
+      const key = box.dataset.key;
+      const select = box.querySelector('select');
+      const input = box.querySelector('input');
+      const saved = box.querySelector('.saved');
+      const persist = () => {
+        decisions[key] = {decision:select.value,note:input.value.trim(),updated:new Date().toISOString()};
+        if(!decisions[key].decision && !decisions[key].note) delete decisions[key];
+        saveDecisions();
+        saved.textContent = decisions[key] ? 'Saved locally' : '';
+        renderMetrics();
+      };
+      select.addEventListener('change', persist);
+      input.addEventListener('change', persist);
+    });
+  }
+
+  function renderCross(){
+    const items = dataset.crossSourceReview || [];
+    el('cross').innerHTML = items.map(item => `<div class="cross-item"><span class="status doubtful">Review</span><strong>${esc(item.rawValue)}</strong><div class="small muted">${esc(item.kind)} · ${esc(item.reason)} · severity ${esc(item.severity)}</div><code>${esc(JSON.stringify(item.context || {}))}</code></div>`).join('') || '<p class="muted">No cross-source review items.</p>';
+  }
+
+  function exportDecisions(){
+    const payload = {
+      schema:'homeopathy-source-review-decisions-v1',
+      exportedAt:new Date().toISOString(),
+      datasetVersion:dataset.version,
+      generatedFrom:dataset.generatedFrom,
+      decisions:Object.entries(decisions).map(([key,value]) => ({key,...value}))
+    };
+    const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='homeopathy-source-review-decisions.json'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+  }
+
+  async function boot(){
+    try{
+      const response = await fetch(DATA_URL,{cache:'no-store'});
+      if(!response.ok) throw new Error(`Review data unavailable (${response.status})`);
+      dataset = await response.json();
+      allRows = normalizeRows(dataset);
+      renderMetrics(); renderSourceOptions(); renderCross(); applyFilters();
+      el('query').addEventListener('input', applyFilters);
+      el('source').addEventListener('change', applyFilters);
+      el('status').addEventListener('change', applyFilters);
+      el('more').addEventListener('click', () => { visible += 100; renderRows(); });
+      el('export').addEventListener('click', exportDecisions);
+    }catch(error){
+      el('error').innerHTML = `<div class="error"><strong>Could not load source review data.</strong><div>${esc(error.message || error)}</div></div>`;
+      el('rows').innerHTML='<tr><td colspan="7" class="muted">Review data unavailable.</td></tr>';
+      el('metrics').innerHTML='<div class="error">Review audit unavailable.</div>';
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "version": "safety-v3-2026-08-15",
+  "locale": "IN",
+  "emergencyNumber": "112",
+  "sources": [
+    {"id":"nhs_stroke","url":"https://www.nhs.uk/conditions/stroke/symptoms/","reviewed":"2026-08-15"},
+    {"id":"nhs_heart","url":"https://www.nhs.uk/conditions/heart-attack/","reviewed":"2026-08-15"},
+    {"id":"nhs_allergy","url":"https://www.nhs.uk/conditions/allergies/","reviewed":"2026-08-15"},
+    {"id":"nhs_seizure","url":"https://www.nhs.uk/symptoms/what-to-do-if-someone-has-a-seizure-fit/","reviewed":"2026-08-15"},
+    {"id":"nhs_meningitis","url":"https://www.nhs.uk/conditions/meningitis/","reviewed":"2026-08-15"},
+    {"id":"cdc_sepsis","url":"https://www.cdc.gov/sepsis/about/index.html","reviewed":"2026-08-15"},
+    {"id":"india_112","url":"https://112.gov.in/","reviewed":"2026-08-15"}
+  ],
+  "rules": [
+    {"id":"E_STROKE_FAST","route":"EMERGENCY","any":["face_droop","one_sided_arm_weakness","new_speech_difficulty"],"source":"nhs_stroke","message":"Possible stroke warning sign."},
+    {"id":"E_CHEST","route":"EMERGENCY","any":["tight_squeezing_chest_pain","chest_pain_spreads_arm_neck_jaw","severe_breathing_difficulty","unresponsive"],"source":"nhs_heart","message":"Possible life-threatening chest/breathing emergency."},
+    {"id":"E_ANAPHYLAXIS","route":"EMERGENCY","any":["sudden_mouth_tongue_throat_swelling","struggling_to_breathe","throat_tight_or_cannot_swallow","faint_unresponsive_after_allergic_reaction"],"source":"nhs_allergy","message":"Possible severe allergic reaction."},
+    {"id":"E_SEIZURE","route":"EMERGENCY","any":["first_seizure","seizure_over_5_minutes","repeated_seizures_without_recovery","breathing_difficulty_after_seizure","serious_injury_during_seizure"],"source":"nhs_seizure","message":"Seizure requires emergency assessment."},
+    {"id":"E_MENINGITIS","route":"EMERGENCY","any":["non_blanching_rash","first_seizure_with_fever","very_difficult_to_wake"],"allGroups":[["stiff_neck","severe_worsening_headache"],["stiff_neck","photophobia"]],"source":"nhs_meningitis","message":"Possible meningitis warning pattern."},
+    {"id":"E_INFANT_TEMP","route":"EMERGENCY","numeric":[{"field":"age_months","op":"<","value":3},{"field":"temperature_c","op":">=","value":38}],"source":"nhs_meningitis","message":"Fever threshold in a baby under 3 months requires immediate medical assessment."},
+    {"id":"U_INFANT_TEMP_3_6","route":"URGENT_ASSESSMENT","numeric":[{"field":"age_months","op":">=","value":3},{"field":"age_months","op":"<","value":6},{"field":"temperature_c","op":">=","value":39}],"source":"nhs_meningitis","message":"High fever in a baby aged 3–6 months requires urgent assessment."},
+    {"id":"U_SEPSIS_PATTERN","route":"URGENT_ASSESSMENT","requires":"suspected_infection","any":["confusion","shortness_of_breath","clammy_sweaty_skin","extreme_pain_discomfort","shivering_or_very_cold","weak_or_very_fast_pulse"],"source":"cdc_sepsis","message":"Infection with possible sepsis warning features requires prompt medical assessment."}
+  ]
+}
