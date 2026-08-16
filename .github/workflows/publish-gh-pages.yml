@@ -1,0 +1,68 @@
+name: Publish audited v3 snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-gh-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download audited Unified v3 PWA snapshot
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output app.zip 'https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-d9e0-8211-a934-17bfa2becce5/raw?se=2026-08-16T06%3A47%3A53Z&sp=r&sv=2026-02-06&sr=b&scid=943e6f7d-965a-551c-9292-85ad9e5e2729&skoid=a3d7d4f3-706d-48bc-8860-17488c12cb39&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-16T00%3A18%3A09Z&ske=2026-08-17T00%3A18%3A09Z&sks=b&skv=2026-02-06&sig=mnvxn0QSbWWQSg97QVhNoVdsLPAhaKdkwuoxojnH%2BRk%3D'
+          mkdir site
+          unzip -q app.zip -d site
+
+      - name: Validate deployment snapshot
+        run: |
+          set -euo pipefail
+          test -s site/index.html
+          test -s site/data/v3/manifest.json
+          test -s site/data/v3/indexes/search_audit.json
+          test -s site/safety/rules_v3.json
+          test -s site/manifest.webmanifest
+          test -s site/sw.js
+          python - <<'PY'
+          import json
+          with open('site/data/v3/manifest.json', encoding='utf-8') as f:
+              manifest=json.load(f)
+          with open('site/data/v3/indexes/search_audit.json', encoding='utf-8') as f:
+              audit=json.load(f)
+          assert manifest.get('version') == 'v3'
+          assert manifest.get('symptomChapters') == 38
+          assert audit.get('postingTruncation') is False
+          assert audit.get('medicineSymptomEvidence') == audit.get('indexedMedicineSymptomEvidence')
+          assert audit.get('medicineSections', 0) > 0
+          assert audit.get('linkedCorpusPassages', 0) > 0
+          print('Deployment snapshot validated:', manifest.get('medicines'), 'medicines,', manifest.get('symptomChapters'), 'Kent chapters,', audit.get('indexedMedicineSymptomEvidence'), 'symptom evidence rows')
+          PY
+          printf 'User-agent: *\nAllow: /\n' > site/robots.txt
+          touch site/.nojekyll
+
+      - name: Publish compiled app to gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cd site
+          git init
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b gh-pages
+          git add -A
+          git commit -m 'deploy: audited Unified v3 run 15 PWA'
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
+          git push --force origin gh-pages
