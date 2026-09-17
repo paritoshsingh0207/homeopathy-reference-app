@@ -33,16 +33,21 @@ jobs:
         with:
           enablement: true
 
-      - name: Validate audited v3 snapshot
+      - name: Validate audited v3 snapshot and repertory workspace
         shell: bash
         run: |
           set -euo pipefail
           test -s index.html
+          test -s repertory.html
           test -s source-review.html
           test -s review/source_extraction_review.json
           test -s data/v3/manifest.json
           test -s data/v3/indexes/search_audit.json
+          test -s data/v3/indexes/symptom_terms.json
+          test -s data/v3/indexes/symptom_chapters.json
           test -s safety/rules_v3.json
+          grep -q 'Repertory workspace' index.html
+          grep -q 'Historical Repertory Workspace' repertory.html
           python - <<'PY'
           import json
           with open('data/v3/manifest.json', encoding='utf-8') as f:
@@ -51,9 +56,13 @@ jobs:
               a = json.load(f)
           with open('review/source_extraction_review.json', encoding='utf-8') as f:
               r = json.load(f)
+          with open('data/v3/indexes/symptom_chapters.json', encoding='utf-8') as f:
+              c = json.load(f)
           assert m.get('version') == 'v3', m.get('version')
           assert m.get('medicines') == 683, m.get('medicines')
           assert m.get('symptomChapters') == 38, m.get('symptomChapters')
+          assert len(c.get('chapters', [])) == 38, len(c.get('chapters', []))
+          assert a.get('symptomConcepts') == 60393, a.get('symptomConcepts')
           assert a.get('unresolvedRubricMentions') == 30481, a.get('unresolvedRubricMentions')
           assert a.get('postingTruncation') is False, a.get('postingTruncation')
           assert a.get('medicineSymptomEvidence') == a.get('indexedMedicineSymptomEvidence')
@@ -62,7 +71,7 @@ jobs:
           assert r.get('summary', {}).get('doubtfulRecords') == 2432
           assert r.get('summary', {}).get('notUnderstoodRecords') == 8760
           assert r.get('summary', {}).get('excludedRecords') == 260
-          print('Validated source-review Unified v3 snapshot:', m.get('medicines'), 'medicines,', m.get('symptomChapters'), 'chapters,', r.get('summary'))
+          print('Validated deployed repertory snapshot:', a.get('symptomConcepts'), 'rubrics,', m.get('medicines'), 'medicines,', len(c.get('chapters', [])), 'chapters')
           PY
 
       - name: Upload Pages artifact
